@@ -7,6 +7,12 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 
+from sklearn.metrics import precision_score, recall_score, roc_auc_score, roc_curve
+import matplotlib.pyplot as plt
+
+from sklearn.metrics import confusion_matrix
+import itertools
+
 RSEED = 50
 
 # Load in data
@@ -15,8 +21,11 @@ df = pd.read_csv('dataset.csv')
 
 # Full dataset: https://www.kaggle.com/cdc/behavioral-risk-factor-surveillance-system
 
+#Serii: training data column(col_3, col_7, col_13)
+dataset_col = "col_3"
+
 # Extract the labels
-labels = np.array(df.pop('One_click_order'))
+labels = np.array(df.pop(dataset_col))
 
 # 30% examples in test data
 train, test, train_labels, test_labels = train_test_split(df,
@@ -61,8 +70,6 @@ train_rf_probs = model.predict_proba(train)[:, 1]
 rf_predictions = model.predict(test)
 rf_probs = model.predict_proba(test)[:, 1]
 
-from sklearn.metrics import precision_score, recall_score, roc_auc_score, roc_curve
-import matplotlib.pyplot as plt
 
 # Plot formatting
 plt.style.use('fivethirtyeight')
@@ -112,8 +119,6 @@ def evaluate_model(predictions, probs, train_predictions, train_probs):
 evaluate_model(rf_predictions, rf_probs, train_rf_predictions, train_rf_probs)
 plt.savefig('roc_auc_curve.png')
 
-from sklearn.metrics import confusion_matrix
-import itertools
 
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
@@ -157,7 +162,7 @@ def plot_confusion_matrix(cm, classes,
 
 # Confusion matrix
 cm = confusion_matrix(test_labels, rf_predictions)
-plot_confusion_matrix(cm, classes = ['Poor Health', 'Good Health'],
-                      title = 'Health Confusion Matrix')
+plot_confusion_matrix(cm, classes = ['Non-churned', 'Churned'],
+                      title = 'Confusion Matrix')
 
-plt.savefig('cm.png')
+plt.savefig('conf_matrix.png')
